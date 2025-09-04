@@ -9,4 +9,9 @@ spring:
 server:
   port: 4001
 
+grpc:
+  server:
+    port: 8001
+
+
 

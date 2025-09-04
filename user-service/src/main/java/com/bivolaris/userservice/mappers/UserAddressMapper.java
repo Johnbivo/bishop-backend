@@ -7,6 +7,7 @@ import com.bivolaris.userservice.dtos.UserAddressDto;
 import com.bivolaris.userservice.entities.UserAddress;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring")
 public interface UserAddressMapper {
@@ -18,6 +19,10 @@ public interface UserAddressMapper {
     UserAddressDto toUserAddressDto(UserAddress userAddress);
 
     @Mapping(target = "type", source = "addressType")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     UserAddress toUserAddress(CreateUserAddressRequestDto request);
 
 

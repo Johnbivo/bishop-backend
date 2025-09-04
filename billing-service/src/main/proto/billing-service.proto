@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "billing";
+option java_outer_classname = "BillingServiceOuterClass";
+
+import "google/protobuf/timestamp.proto";
+
+service AccountBillingService {
+  rpc createBillingAccount (AccountBillingRequest) returns (AccountBillingResponse);
+}
+
+message AccountBillingRequest {
+  string userId = 1;
+  string currency = 2;
+}
+
+message AccountBillingResponse {
+  string billingAccountId = 1;
+  string billingAccountStatus = 2;
+  google.protobuf.Timestamp createdAt = 3;
+
+}
