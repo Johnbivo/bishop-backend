@@ -3,9 +3,12 @@ package com.bivolaris.billingservice.grpc;
 import billing.AccountBillingRequest;
 import billing.AccountBillingResponse;
 import billing.AccountBillingServiceGrpc;
+import billing.DeleteBillingAccountRequest;
 import com.bivolaris.billingservice.dtos.BillingAccountGrpsResponse;
 import com.bivolaris.billingservice.dtos.CreateBillingAccountGrpcRequestDto;
 import com.bivolaris.billingservice.entities.CurrencyEnum;
+import com.bivolaris.billingservice.exceptions.BillingAccountNotFoundException;
+import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +54,46 @@ public class AccountBillingService extends AccountBillingServiceGrpc.AccountBill
         //Complete data exchange
         responseObserver.onCompleted();
     }
+
+
+    @Override
+    public void deleteBillingAccount(DeleteBillingAccountRequest request,
+                                     StreamObserver<Empty> responseObserver) {
+        try {
+
+            //Extract uuid from request
+            UUID billingAccountId = UUID.fromString(request.getBillingAccountId());
+
+            // call internal delete in billingAccountService
+            billingAccountService.deleteBillingAccount(billingAccountId);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+
+        } catch (BillingAccountNotFoundException e) {
+            responseObserver.onError(
+                    new io.grpc.StatusRuntimeException(
+                            io.grpc.Status.NOT_FOUND.withDescription(e.getMessage())
+                    )
+            );
+        } catch (IllegalArgumentException e) {
+            responseObserver.onError(
+                    new io.grpc.StatusRuntimeException(
+                            io.grpc.Status.INVALID_ARGUMENT.withDescription("Invalid billing account ID")
+                    )
+            );
+        } catch (Exception e) {
+            responseObserver.onError(
+                    new io.grpc.StatusRuntimeException(
+                            io.grpc.Status.INTERNAL.withDescription(e.getMessage())
+                    )
+            );
+        }
+    }
+
+
+
+
 
 
 }

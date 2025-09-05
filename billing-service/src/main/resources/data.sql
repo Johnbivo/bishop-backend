@@ -52,6 +52,8 @@ CREATE TABLE invoices (
     INDEX idx_status (status)
 );
 
+DROP TABLE IF EXISTS transactions;
+
 CREATE TABLE transactions (
     id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
     invoice_id BINARY(16) NOT NULL,

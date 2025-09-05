@@ -44,4 +44,6 @@ public class InvoiceServiceServiceImpl implements InvoiceService {
         }
         return invoices.stream().map(invoiceMapper::toInvoiceDto).toList();
     }
+
+
 }

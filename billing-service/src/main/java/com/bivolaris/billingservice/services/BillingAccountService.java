@@ -13,5 +13,5 @@ public interface BillingAccountService {
     public BillingAccountDto getBillingAccountById(UUID id);
     public BillingAccountDto getBillingAccountByUserId(UUID userId);
     public BillingAccountGrpsResponse createBillingAccountService(CreateBillingAccountGrpcRequestDto createBillingAccountDto);
-
+    public boolean deleteBillingAccount(UUID id);
 }

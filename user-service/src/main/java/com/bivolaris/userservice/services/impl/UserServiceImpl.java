@@ -26,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final AccountBillingService billingClient;
 
+    private AccountBillingService accountBillingService;
+
 
 
     @Override
@@ -111,6 +113,16 @@ public class UserServiceImpl implements UserService {
     public boolean deleteUser(UUID id){
         var user = userRepository.findById(id).orElseThrow(() -> new UsersNotFoundException("User not found"));
         userRepository.delete(user);
+
+        boolean billingDeleted = false;
+        try {
+            billingDeleted = accountBillingService.deleteBillingAccount(user.getBillingAccountId());
+        } catch (Exception e) {
+            // Optionally log the exception
+            // The transaction for user deletion will still succeed
+            e.printStackTrace();
+        }
+
         return true;
     }
 

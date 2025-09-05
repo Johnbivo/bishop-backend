@@ -9,8 +9,10 @@ import com.bivolaris.userservice.dtos.CreateBillingAccountRequest;
 import com.bivolaris.userservice.entities.BillingAccountStatusEnum;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import billing.DeleteBillingAccountRequest;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -60,6 +62,25 @@ public class AccountBillingService {
 
         return response;
     }
+
+
+
+    public boolean deleteBillingAccount(String billingAccountId) {
+        DeleteBillingAccountRequest grpcRequest = DeleteBillingAccountRequest.newBuilder()
+                .setBillingAccountId(billingAccountId)
+                .build();
+
+        try {
+            blockingStub.deleteBillingAccount(grpcRequest);
+            return true;
+        } catch (io.grpc.StatusRuntimeException e) {
+            if (e.getStatus().getCode() == io.grpc.Status.Code.NOT_FOUND) return false;
+            throw e;
+        }
+    }
+
+
+
 
 
 }

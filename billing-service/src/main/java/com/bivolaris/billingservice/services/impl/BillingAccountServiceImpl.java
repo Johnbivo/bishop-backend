@@ -67,4 +67,11 @@ public class BillingAccountServiceImpl implements BillingAccountService {
         return billingAccountMapper.toBillingAccountGrpcResponse(savedAccount);
     }
 
+
+    @Override
+    public boolean deleteBillingAccount(UUID id){
+        var  billingAccount = billingAccountRepository.findById(id).orElseThrow(() -> new BillingAccountNotFoundException("Billing Account with id: " + id + " not found."));
+        billingAccountRepository.delete(billingAccount);
+        return true;
+    }
 }
