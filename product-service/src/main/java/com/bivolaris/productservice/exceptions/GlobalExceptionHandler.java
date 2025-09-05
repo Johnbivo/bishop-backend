@@ -42,6 +42,80 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<?> handleCategoryNotFoundException(CategoryNotFoundException ex){
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now().format(formatter));
+        errorBody.put("status", HttpStatus.NOT_FOUND.value());
+        errorBody.put("error", "Category Not Found");
+        errorBody.put("message", ex.getMessage());
+        errorBody.put("path", "/categories");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+    }
+
+
+    @ExceptionHandler(CategoryCreationException.class)
+    public ResponseEntity<?> handleCategoryCreationException(CategoryCreationException ex){
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now().format(formatter));
+        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
+        errorBody.put("error", "Category could not be created.");
+        errorBody.put("message", ex.getMessage());
+        errorBody.put("path", "/categories");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+    @ExceptionHandler(InventoryNotFoundException.class)
+    public ResponseEntity<?> handleInventoryNotFoundException(InventoryNotFoundException ex){
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now().format(formatter));
+        errorBody.put("status", HttpStatus.NOT_FOUND.value());
+        errorBody.put("error", "Inventory Not Found");
+        errorBody.put("message", ex.getMessage());
+        errorBody.put("path", "/inventory");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+    }
+
+    @ExceptionHandler(InventoryCreationException.class)
+    public ResponseEntity<?> handleInventoryCreationException(InventoryCreationException ex){
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now().format(formatter));
+        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
+        errorBody.put("error", "Inventory could not be created.");
+        errorBody.put("message", ex.getMessage());
+        errorBody.put("path", "/inventory");
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+
+    @ExceptionHandler(ProductSpecificationsNotFoundException.class)
+    public ResponseEntity<?> handleProductSpecificationsNotFoundException(ProductSpecificationsNotFoundException ex){
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now().format(formatter));
+        errorBody.put("status", HttpStatus.NOT_FOUND.value());
+        errorBody.put("error", "Product Specifications Not Found");
+        errorBody.put("message", ex.getMessage());
+        errorBody.put("path", "/product-specifications");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+    }
+
+
+    @ExceptionHandler(ProductSpecificationsCreationException.class)
+    public ResponseEntity<?> handleProductSpecificationsCreationException(ProductSpecificationsCreationException ex){
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", LocalDateTime.now().format(formatter));
+        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
+        errorBody.put("error", "Product Specifications could not be created.");
+        errorBody.put("message", ex.getMessage());
+        errorBody.put("path", "/product-specifications");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+
 
 }
 
