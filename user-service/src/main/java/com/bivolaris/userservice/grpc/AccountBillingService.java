@@ -26,7 +26,7 @@ public class AccountBillingService {
 
     public AccountBillingService(
             @Value("${BILLING.SERVICE.ADDRESS:LOCALHOST}") String serverAddress,
-            @Value("${BILLING.SERVICE.GRPC.PORT:9001}") int serverPort) {
+            @Value("${BILLING.SERVICE.GRPC.PORT:8001}") int serverPort) {
 
 
 

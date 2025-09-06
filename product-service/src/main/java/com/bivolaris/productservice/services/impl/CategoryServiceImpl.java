@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoriesService {
 
     @Override
     public CategoryDto getCategoryByName(String categoryName){
-        var category = categoryRepository.findByCategoryName(categoryName).orElseThrow(() -> new CategoryNotFoundException(categoryName));
+        var category = categoryRepository.findByName(categoryName).orElseThrow(() -> new CategoryNotFoundException(categoryName));
         return categoryMapper.toCategoryDto(category);
     }
 

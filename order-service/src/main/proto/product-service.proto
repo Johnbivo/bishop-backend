@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "products";
+option java_outer_classname = "ProductServiceOuterClass";
+
+service ProductServiceGet {
+  rpc getProductById (GetProductRequest) returns (GetProductResponse);
+  rpc getStockLevel (GetStockRequest) returns (GetStockResponse);
+}
+
+message GetProductRequest {
+  string productId = 1;
+}
+
+message GetProductResponse {
+  string name = 1;
+  double price = 2;
+  string currency = 3;
+  string brand = 4;
+  string model = 5;
+}
+
+message GetStockRequest {
+  string productId = 1;
+}
+
+message GetStockResponse {
+  string productId = 1;
+  int32 availableQuantity = 2;
+}

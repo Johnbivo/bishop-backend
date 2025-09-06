@@ -1,9 +1,10 @@
 spring:
   application:
-    name: product-service
+    name: order-service
+
 
 server:
-  port: 4003
+  port: 4004
 
 grpc:
   server:

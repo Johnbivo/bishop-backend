@@ -74,8 +74,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(String id) {
-        var product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found."));
+    public ProductDto getProductById(String productId) {
+        var product = productRepository.findByProductId(productId);
+        if (product == null) {
+            throw new ProductNotFoundException("Product not found.");
+        }
         return productMapper.toDto(product);
     }
 
