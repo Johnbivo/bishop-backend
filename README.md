@@ -1,7 +1,7 @@
 ## E‑Commerce Bishop (Microservices)
 
 ### Project status
-- ⚠️ This project is a work in progress and is **not completed**. Expect breaking changes, missing features, and evolving APIs.
+- ⚠️ This project is a work in progress and is **not completed**. Expect breaking changes, missing features, and evolving APIs. The readme file will be updated in the future adding requirements, system architecture, umls.
 
 ### Overview
 A microservices-based e‑commerce backend built with Spring Boot and gRPC. Each service is independently deployable and communicates via REST and/or gRPC where applicable.
@@ -98,4 +98,4 @@ Repeat for other services, mapping ports accordingly.
 - Use feature branches and small, focused pull requests.
 
 ### License
-- Add your license of choice (e.g., MIT/Apache-2.0) at the repo root as `LICENSE`. 
+- This project is part of a project for my portfolio presentation and for educational purposes only. Read-only licence.
