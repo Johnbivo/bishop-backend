@@ -1,0 +1,36 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="product-service-db" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+    <deployment type="docker-image">
+      <settings>
+        <option name="imageTag" value="mongo" />
+        <option name="containerName" value="product-service-db" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="MONGO_INITDB_DATABASE" />
+              <option name="value" value="productDB" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="MONGO_INITDB_ROOT_PASSWORD" />
+              <option name="value" value="password!" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="MONGO_INITDB_ROOT_USERNAME" />
+              <option name="value" value="johnbivo" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="27017" />
+              <option name="hostPort" value="9002" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--network bishop" />
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
