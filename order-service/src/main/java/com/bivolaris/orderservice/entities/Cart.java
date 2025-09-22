@@ -44,4 +44,16 @@ public class Cart {
     @OneToMany(mappedBy = "cart",  fetch = FetchType.LAZY)
     private List<CartItem> cartItems;
 
+
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }

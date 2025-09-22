@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import products.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -48,6 +49,18 @@ public class ProductServiceGrpcClient {
                 .build();
 
         return blockingStub.getStockLevel(request);
+    }
+
+    public GetStockForAllResponse getStockLevelForAll(List<UUID> productIds){
+
+        List<String> productIdsString = productIds.stream().map(UUID::toString).toList();
+
+        GetStockForAllRequest request = GetStockForAllRequest.newBuilder()
+                .addAllProductIds(productIdsString)
+                .build();
+
+
+        return blockingStub.getStockLevelForAll(request);
     }
 
 

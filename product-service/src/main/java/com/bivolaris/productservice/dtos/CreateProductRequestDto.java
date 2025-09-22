@@ -45,5 +45,7 @@ public class CreateProductRequestDto {
     private Integer weightGrams;
 
     private List<String> tags;
+
+    private List<String> imageUrls;
 }
 

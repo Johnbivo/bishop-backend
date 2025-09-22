@@ -12,10 +12,11 @@ public interface CartService {
 
     public List<CartDto> getAllCarts();
     public CartDto getCartById(UUID cartId);
-    public CartDto createCart(CreateCartRequestDto createCartRequestDto);
-    public CartDto addItemToCart(UUID cartId, AddItemToCartDto addItemToCartDto);
-    public Boolean removeItemFromCart(UUID cartId, UUID productId);
-    public Boolean cleanCart(UUID cartId);
-    public Boolean deleteCart(UUID cartId);
-    public Boolean checkout(UUID cartId);
+
+    public CartDto getCartBySessionId(String sessionId);
+    public CartDto createCart(String sessionId, CreateCartRequestDto createCartRequestDto);
+    public CartDto addItemToCart(String sessionId, AddItemToCartDto addItemToCartDto);
+    public Boolean removeItemFromCart(String sessionId, UUID productId);
+    public Boolean cleanCart(String sessionId);
+    public Boolean checkout(String sessionId);
 }

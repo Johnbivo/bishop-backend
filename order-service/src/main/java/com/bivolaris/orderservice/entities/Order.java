@@ -25,6 +25,9 @@ public class Order {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name= "session_id")
+    private UUID sessionId;
+
     @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatusEnum  orderStatus;

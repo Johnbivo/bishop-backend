@@ -8,6 +8,7 @@ import com.bivolaris.billingservice.dtos.BillingAccountGrpsResponse;
 import com.bivolaris.billingservice.dtos.CreateBillingAccountGrpcRequestDto;
 import com.bivolaris.billingservice.entities.CurrencyEnum;
 import com.bivolaris.billingservice.exceptions.BillingAccountNotFoundException;
+import com.bivolaris.billingservice.services.BillingAccountService;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @GrpcService
 public class AccountBillingService extends AccountBillingServiceGrpc.AccountBillingServiceImplBase {
 
-    private final com.bivolaris.billingservice.services.BillingAccountService billingAccountService;
+    private final BillingAccountService billingAccountService;
 
     @Override
     public void createBillingAccount(AccountBillingRequest billingRequest,

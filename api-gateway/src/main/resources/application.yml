@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service-route
+              uri: http://auth-service:4000
+              predicates:
+                - Path=/api/bishop/auth/**
+              filters:
+                - StripPrefix=2
+
+            - id: user-service-route
+              uri: http://user-service:4001
+              predicates:
+                - Path=/api/bishop/users/**
+              filters:
+                - StripPrefix=2
+
+            - id: billing-service-route
+              uri: http://billing-service:4002
+              predicates:
+                - Path=/api/bishop/billing-accounts/**
+              filters:
+                - StripPrefix=2
+
+            - id: product-service-route
+              uri: http://product-service:4003
+              predicates:
+                - Path=/api/bishop/products/**
+              filters:
+                - StripPrefix=2
+
+            - id: order-service-route
+              uri: http://order-service:4004
+              predicates:
+                - Path=/api/bishop/orders/**
+              filters:
+                - StripPrefix=2
+                - JwtValidation
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: password!
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 0
+          max-wait: -1ms
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+
+server:
+  port: 5000
+
+

@@ -49,6 +49,7 @@ public class Product {
     @Indexed(unique = true)
     private String sku;
 
+
     @Indexed
     private ProductStatus status;
 
@@ -56,6 +57,11 @@ public class Product {
     private Integer weightGrams;
 
     private List<String> tags = new ArrayList<>();
+
+
+    @Field("image_urls")
+    private List<String> imageUrls = new ArrayList<>();
+
 
     @CreatedDate
     @Field("created_at")

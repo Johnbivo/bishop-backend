@@ -73,4 +73,16 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryRepository.delete(inventory);
         return true;
     }
+
+
+    @Override
+    public List<InventoryDto> getInventoriesByProductIds(List<String> productIds) {
+        var inventories = inventoryRepository.findAllById(productIds);
+        if (inventories.isEmpty()) {
+            throw new InventoryNotFoundException("No inventories found for the provided product IDs.");
+        }
+        return inventories.stream()
+                .map(inventoryMapper::toInventoryDto)
+                .toList();
+    }
 }

@@ -3,12 +3,15 @@ package com.bivolaris.productservice.grpc;
 
 import com.bivolaris.productservice.dtos.InventoryDto;
 import com.bivolaris.productservice.dtos.ProductDto;
+import com.bivolaris.productservice.exceptions.InventoryNotFoundException;
 import com.bivolaris.productservice.exceptions.ProductNotFoundException;
 import com.bivolaris.productservice.services.InventoryService;
 import com.bivolaris.productservice.services.ProductService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import products.*;
+
+import java.util.List;
 
 @GrpcService
 public class ProductServiceGet extends ProductServiceGetGrpc.ProductServiceGetImplBase {
@@ -73,6 +76,40 @@ public class ProductServiceGet extends ProductServiceGetGrpc.ProductServiceGetIm
                     .asRuntimeException());
         }
         catch (Exception e){
+            responseObserver.onError(io.grpc.Status.INTERNAL
+                    .withDescription("Internal server error")
+                    .asRuntimeException());
+        }
+
+    }
+
+    @Override
+    public void getStockLevelForAll(GetStockForAllRequest request,
+                                    StreamObserver<GetStockForAllResponse> responseObserver) {
+
+        try {
+            List<InventoryDto> inventories = inventoryService.getInventoriesByProductIds(
+                    request.getProductIdsList()
+            );
+
+            GetStockForAllResponse.Builder responseBuilder = GetStockForAllResponse.newBuilder();
+
+            for (InventoryDto inventory : inventories) {
+                GetStockResponse stock = GetStockResponse.newBuilder()
+                        .setProductId(inventory.getProductId())
+                        .setAvailableQuantity(inventory.getAvailableQuantity())
+                        .build();
+                responseBuilder.addStocks(stock);
+            }
+
+            responseObserver.onNext(responseBuilder.build());
+            responseObserver.onCompleted();
+
+        } catch (InventoryNotFoundException e) {
+            responseObserver.onError(io.grpc.Status.NOT_FOUND
+                    .withDescription(e.getMessage())
+                    .asRuntimeException());
+        } catch (Exception e) {
             responseObserver.onError(io.grpc.Status.INTERNAL
                     .withDescription("Internal server error")
                     .asRuntimeException());

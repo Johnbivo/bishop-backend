@@ -7,6 +7,7 @@ option java_outer_classname = "ProductServiceOuterClass";
 service ProductServiceGet {
   rpc getProductById (GetProductRequest) returns (GetProductResponse);
   rpc getStockLevel (GetStockRequest) returns (GetStockResponse);
+  rpc getStockLevelForAll(GetStockForAllRequest) returns (GetStockForAllResponse);
 }
 
 message GetProductRequest {
@@ -28,4 +29,13 @@ message GetStockRequest {
 message GetStockResponse {
   string productId = 1;
   int32 availableQuantity = 2;
+}
+
+
+message GetStockForAllRequest{
+  repeated string productIds = 1;
+}
+
+message GetStockForAllResponse {
+  repeated GetStockResponse stocks = 1;
 }

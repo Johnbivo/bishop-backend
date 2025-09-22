@@ -3,7 +3,7 @@ REM Name of your container
 SET CONTAINER_NAME=order-service-db
 
 REM MySQL credentials
-SET MYSQL_ROOT_PASSWORD=74800106
+SET MYSQL_ROOT_PASSWORD=password!
 SET MYSQL_DATABASE=orderDB
 
 REM Check if container is running

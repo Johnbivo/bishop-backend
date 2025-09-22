@@ -20,4 +20,5 @@ public class ProductDto{
     ProductStatus status;
     Integer weightGrams;
     List<String> tags;
+    List<String> imageUrls;
 }

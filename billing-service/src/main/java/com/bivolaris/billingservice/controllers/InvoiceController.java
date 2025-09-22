@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/invoices")
+@RequestMapping("/billing-accounts/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;

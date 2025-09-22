@@ -13,4 +13,7 @@ public interface InventoryService {
     public boolean createInventoryForProduct(CreateInventoryForProductDto createInventoryForProductDto);
     public boolean updateInventoryForProduct(UpdateInventoryRequestDto updateInventoryRequestDto, String productId);
     public boolean deleteInventoryForProduct(String productId);
+
+
+    List<InventoryDto> getInventoriesByProductIds(List<String> productIds);
 }
