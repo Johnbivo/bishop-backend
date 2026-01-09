@@ -2,15 +2,16 @@ package com.bivolaris.orderservice.services.impl;
 
 import com.bivolaris.orderservice.dtos.AddItemToCartDto;
 import com.bivolaris.orderservice.dtos.CartDto;
+import com.bivolaris.orderservice.dtos.CheckoutDto;
 import com.bivolaris.orderservice.dtos.CreateCartRequestDto;
 import com.bivolaris.orderservice.entities.*;
 import com.bivolaris.orderservice.exceptions.CartItemNotFoundException;
 import com.bivolaris.orderservice.exceptions.CartNotFoundException;
 import com.bivolaris.orderservice.exceptions.ProductNotFoundException;
 import com.bivolaris.orderservice.grpc.ProductServiceGrpcClient;
+import com.bivolaris.orderservice.grpc.UserServiceGrpcClient;
 import com.bivolaris.orderservice.mappers.CartMapper;
-import com.bivolaris.orderservice.repositories.CartItemRepository;
-import com.bivolaris.orderservice.repositories.CartRepository;
+import com.bivolaris.orderservice.repositories.*;
 import com.bivolaris.orderservice.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,9 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 import products.GetStockForAllResponse;
 import products.GetStockResponse;
 import org.springframework.cache.annotation.Cacheable;
+import userServiceGrpc.GetUserResponse;
+import userServiceGrpc.UserAddressMessage;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -37,6 +41,14 @@ public class CartServiceImpl implements CartService {
     private final ProductServiceGrpcClient productServiceGrpcClient;
     private final CartItemRepository cartItemRepository;
     private final RedisTemplate<String, CartDto> redisTemplate;
+
+
+    private final UserServiceGrpcClient userServiceGrpcClient;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+
+
 
 
     @Override
@@ -157,7 +169,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @CacheEvict(value = "carts", key = "#sessionId")
-    public Boolean checkout(String sessionId) {
+    public Boolean checkout(String sessionId, CheckoutDto checkoutDto) {
         var cart = cartRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new CartNotFoundException("Cart not found for session: " + sessionId));
 
@@ -186,23 +198,142 @@ public class CartServiceImpl implements CartService {
             }
         }
 
-        //TODO: 4 STEP HIT ENDPOINT PROCESS
         Order order = new Order();
-        if (cart.getUserId() != null) {
-            //TODO: USING GRPC GET ALL THE INFO NEEDED FROM THE BILLING SERVICE.
-        }else {
-            //TODO: SET THESE AND THEN JUST END WAITING FOR THE NEXT DATA TO FINISH ORDER
-            //
-            order.setSessionId(UUID.fromString(sessionId));
-            order.setOrderStatus(OrderStatusEnum.PENDING);  // default status
-            order.setCreatedAt(LocalDateTime.now());
-            order.setUpdatedAt(LocalDateTime.now());
 
+        if (cart.getUserId() != null) {
+            // LOGGED-IN USER: Get user info via gRPC (checkoutDto will be null)
+
+            GetUserResponse userResponse = userServiceGrpcClient.getUserWithAddresses(cart.getUserId().toString());
+
+
+            UserAddressMessage billingAddress = userResponse.getAddressesList().stream()
+                    .filter(addr -> {
+                        String type = addr.getType();
+                        return (type.equals("BILLING") || type.equals("BOTH")) && addr.getIsDefault();
+                    })
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No default billing address found for user"));
+
+
+            UserAddressMessage shippingAddress = userResponse.getAddressesList().stream()
+                    .filter(addr -> {
+                        String type = addr.getType();
+                        return (type.equals("SHIPPING") || type.equals("BOTH")) && addr.getIsDefault();
+                    })
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No default shipping address found for user"));
+
+            order.setUserId(cart.getUserId());
+            order.setSessionId(UUID.fromString(sessionId));
+
+            // Set billing address from UserService
+            order.setBillingAddressLine1(billingAddress.getAddressLine1());
+            order.setBillingAddressLine2(billingAddress.getAddressLine2());
+            order.setBillingCity(billingAddress.getCity());
+            order.setBillingState(billingAddress.getState());
+            order.setBillingCountry(billingAddress.getCountry());
+
+            // Set billing account from UserService response
+            if (!userResponse.getBillingAccountId().isEmpty()) {
+                order.setBillingAccountId(UUID.fromString(userResponse.getBillingAccountId()));
+            }
+
+            // Set shipping address from UserService
+            order.setShippingAddressLine1(shippingAddress.getAddressLine1());
+            order.setShippingAddressLine2(shippingAddress.getAddressLine2());
+            order.setShippingCity(shippingAddress.getCity());
+            order.setShippingState(shippingAddress.getState());
+            order.setShippingCountry(shippingAddress.getCountry());
+
+            // Set currency from cart items
+            if (!cartItems.isEmpty()) {
+                order.setCurrency(cartItems.getFirst().getCurrency());
+            }
+
+            order.setOrderStatus(OrderStatusEnum.CONFIRMED);
+
+        } else {
+            // GUEST USER: Use data from checkoutDto
+            if (checkoutDto == null) {
+                throw new IllegalStateException("Checkout information required for guest users");
+            }
+
+            order.setSessionId(UUID.fromString(sessionId));
+
+            // Set billing address from DTO
+            order.setBillingAddressLine1(checkoutDto.getBillingAddressLine1());
+            order.setBillingAddressLine2(checkoutDto.getBillingAddressLine2());
+            order.setBillingCity(checkoutDto.getBillingCity());
+            order.setBillingState(checkoutDto.getBillingState());
+            order.setBillingCountry(checkoutDto.getBillingCountry());
+
+            // Set shipping address from DTO
+            order.setShippingAddressLine1(checkoutDto.getShippingAddressLine1());
+            order.setShippingAddressLine2(checkoutDto.getShippingAddressLine2());
+            order.setShippingCity(checkoutDto.getShippingCity());
+            order.setShippingState(checkoutDto.getShippingState());
+            order.setShippingCountry(checkoutDto.getShippingCountry());
+
+            // Set payment method if provided
+            if (checkoutDto.getPaymentMethodId() != null && !checkoutDto.getPaymentMethodId().isEmpty()) {
+                order.setPaymentMethodId(UUID.fromString(checkoutDto.getPaymentMethodId()));
+            }
+
+            // Set currency from cart items
+            if (!cartItems.isEmpty()) {
+                order.setCurrency(cartItems.getFirst().getCurrency());
+            }
+
+            order.setOrderStatus(OrderStatusEnum.CONFIRMED);
         }
 
 
 
-        // TODO: CONTINUE TO CREATE AN ORDER
-        return false;
+
+        order.setTotalAmount(cart.getTotalAmount());
+        order.setCreatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDateTime.now());
+
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Create order items from cart items
+        cartItems.forEach(cartItem -> {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(savedOrder);
+            orderItem.setProductId(cartItem.getProductId());
+            orderItem.setProductName(cartItem.getProductName());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setUnitPrice(cartItem.getUnitPrice());
+            orderItem.setTotalPrice(cartItem.getTotalPrice());
+            orderItem.setProductSku(cartItem.getProductModel());
+            orderItem.setCreatedAt(LocalDateTime.now());
+
+            if (savedOrder.getOrderItems() == null) {
+                savedOrder.setOrderItems(new ArrayList<>());
+            }
+            savedOrder.getOrderItems().add(orderItem);
+        });
+
+        orderRepository.save(savedOrder);
+
+        // Create initial status history entry
+        OrderStatusHistory statusHistory = new OrderStatusHistory();
+        statusHistory.setOrder(savedOrder);
+        statusHistory.setOldStatus(null);
+        statusHistory.setNewStatus(savedOrder.getOrderStatus());
+        statusHistory.setChangedAt(LocalDateTime.now());
+        statusHistory.setNotes("Order created");
+        orderStatusHistoryRepository.save(statusHistory);
+
+        // TODO: Reduce stock levels via gRPC call to ProductService
+        // TODO: Clear cart after successful order (call to billing service)
+
+        return true;
     }
+
+
+
+
+
 }

@@ -53,6 +53,6 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethodResponse getPaymentOrder(UUID billingAccountId){
 
-
+        return null;
     }
 }

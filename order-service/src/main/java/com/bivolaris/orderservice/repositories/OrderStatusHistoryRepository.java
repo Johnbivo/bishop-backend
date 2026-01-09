@@ -1,4 +1,11 @@
 package com.bivolaris.orderservice.repositories;
 
-public interface OrderStatusHistoryRepository {
+import com.bivolaris.orderservice.entities.OrderStatusHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
+
+@Repository
+public interface OrderStatusHistoryRepository extends JpaRepository<OrderStatusHistory, UUID> {
 }

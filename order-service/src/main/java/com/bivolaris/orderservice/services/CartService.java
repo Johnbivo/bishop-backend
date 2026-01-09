@@ -3,6 +3,7 @@ package com.bivolaris.orderservice.services;
 
 import com.bivolaris.orderservice.dtos.AddItemToCartDto;
 import com.bivolaris.orderservice.dtos.CartDto;
+import com.bivolaris.orderservice.dtos.CheckoutDto;
 import com.bivolaris.orderservice.dtos.CreateCartRequestDto;
 
 import java.util.List;
@@ -18,5 +19,5 @@ public interface CartService {
     public CartDto addItemToCart(String sessionId, AddItemToCartDto addItemToCartDto);
     public Boolean removeItemFromCart(String sessionId, UUID productId);
     public Boolean cleanCart(String sessionId);
-    public Boolean checkout(String sessionId);
+    Boolean checkout(String sessionId, CheckoutDto checkoutDto);
 }

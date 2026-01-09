@@ -3,9 +3,25 @@ spring:
     name: order-service
 
 
+
+
 server:
   port: 4004
 
-grpc:
-  server:
-    port: 8002
+product:
+  service:
+    address: localhost
+    grpc:
+      port: 8002
+
+user:
+  service:
+    address: localhost
+    grpc:
+      port: 8003
+
+billing:
+  service:
+    address: localhost
+    grpc:
+      port: 8001

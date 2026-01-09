@@ -1,29 +1,46 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "billingGetShipPay";
-option java_outer_classname = "BillingServiceGetPayOuterClass";
+option java_package = "userServiceGrpc";
+option java_outer_classname = "UserServiceProto";
 
-service BillingServiceGetShippingPayment {
-  rpc GetBillingAccountByUserId(GetBillingAccountRequest) returns (GetBillingAccountResponse);
+package userService;
+
+service UserService {
+  rpc GetUserWithAddresses(GetUserRequest) returns (GetUserResponse);
 }
 
-message GetBillingAccountRequest {
+message GetUserRequest {
   string userId = 1;
 }
 
-message GetBillingAccountResponse {
-  string billingAccountId = 1;
-  string currency = 2;
+message GetUserResponse {
+  string userId = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string phone = 5;
+  string dateOfBirth = 6;
+  string gender = 7;
 
-  string billingAddressLine1 = 3;
-  string billingAddressLine2 = 4;
-  string billingCity = 5;
-  string billingState = 6;
-  string billingPostalCode = 7;
-  string billingCountry = 8;
+  string billingAccountId = 8;
+  string billingAccountStatus = 9;
 
+  bool marketingEmails = 10;
+  bool orderNotifications = 11;
 
-  string paymentMethodId = 9;
+  repeated UserAddressMessage addresses = 12;
+}
 
+message UserAddressMessage {
+  string addressId = 1;
+  string type = 2;  // BILLING, SHIPPING, BOTH
+  bool isDefault = 3;
+  string company = 4;
+  string addressLine1 = 5;
+  string addressLine2 = 6;
+  string city = 7;
+  string state = 8;
+  string postalCode = 9;
+  string country = 10;
 }
